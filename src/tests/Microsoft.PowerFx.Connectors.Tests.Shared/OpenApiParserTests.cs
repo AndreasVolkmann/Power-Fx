@@ -28,6 +28,24 @@ namespace Microsoft.PowerFx.Connectors.Tests
         }
 
         [Fact]
+        public void Excel_BodyParameter_ExpectedName()
+        {
+            OpenApiDocument doc = Helpers.ReadSwagger(@"Swagger\ExcelOnlineBusiness.swagger.json", _output);
+            List<ConnectorFunction> functions = OpenApiParser.GetFunctions("Excel", doc, new ConsoleLogger(_output)).OrderBy(cf => cf.Name).ToList();
+
+            var patchItemFunction = functions.FirstOrDefault(f => f.Name == "PatchItem");
+            Assert.NotNull(patchItemFunction);
+
+            var bodyName = patchItemFunction.Operation.RequestBody.GetBodyName();
+            Assert.Equal("item", bodyName);
+
+            var bodyParameter = patchItemFunction.OptionalParameters.FirstOrDefault(p => p.IsBodyParameter);
+            Assert.NotNull(bodyParameter);
+            
+            Assert.Equal("item", bodyParameter.Name);
+        }
+
+        [Fact]
         public void ACSL_GetFunctionNames()
         {
             OpenApiDocument doc = Helpers.ReadSwagger(@"Swagger\Azure Cognitive Service for Language.json", _output);
