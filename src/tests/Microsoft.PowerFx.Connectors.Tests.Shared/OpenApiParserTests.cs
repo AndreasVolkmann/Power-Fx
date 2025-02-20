@@ -86,6 +86,22 @@ namespace Microsoft.PowerFx.Connectors.Tests
             Assert.Equal("rows", createFileWithTable.RequiredParameters[0].Name);
             Assert.Equal("*[Value:*[]]", createFileWithTable.RequiredParameters[0].FormulaType.ToStringWithDisplayNames());
         }
+        
+        [Fact]
+        public async Task ExchangeOnline_CreateFileWithTable()
+        {
+            using var testConnector = new LoggingTestServer(@"Swagger\ExcelOnlineBusiness.swagger.json", _output);
+            List<ConnectorFunction> functions = OpenApiParser.GetFunctions(
+                new ConnectorSettings("ExcelOnline")
+                {
+                    Compatibility = ConnectorCompatibility.Default,
+                },
+                testConnector._apiDocument).ToList();
+
+            ConnectorFunction function = functions.FirstOrDefault(f => f.Name == "CreateFileWithTable");
+            Assert.NotNull(function);
+            Assert.NotEmpty(function.RequiredParameters);
+        }
 
         [Fact]
         public void ACSL_Load()
